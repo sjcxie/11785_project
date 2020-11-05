@@ -18,6 +18,7 @@ def compute_accuracy(logits, y):
     acc = correct.sum().float() / len(y)
     return float(acc), correct
 
+
 class Trainer(object):
     def __init__(self, model, train_loader, val_loader, test_loader, optimizer, scheduler, device, args):
         super(Trainer, self).__init__()
@@ -33,7 +34,7 @@ class Trainer(object):
         self.logger = SummaryWriter(log_dir=args.logdir, flush_secs=60)        
         self.early_stop = False
         self.tracked_metric = 'train_loss'
-        self.metric_comparator = lambda x,y: x<y
+        self.metric_comparator = lambda x, y: x<y
 
     def track_metric(self, metric_name, direction):
         self.tracked_metric = metric_name

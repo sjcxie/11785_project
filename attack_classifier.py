@@ -65,6 +65,7 @@ class EnsembleWrapper(nn.Module):
                 preds[i, -1] = 1
         return preds
 
+
 class GaussianSmoothingWrapper(nn.Module):
     def __init__(self, model, sigma, concensus_pc=0.5):
         super(GaussianSmoothingWrapper, self).__init__()
@@ -95,6 +96,7 @@ class GaussianSmoothingWrapper(nn.Module):
                 preds[i, -1] = 1
         return preds
 
+
 class Attacker:
     def __init__(self,source_model, dataloader, attack_class, *args, binary_classification=False, max_instances=-1, **kwargs):
         self.model = source_model
@@ -106,7 +108,6 @@ class Attacker:
         self.max_instances=max_instances
         self.binary_classification = binary_classification
         self.targeted = False
-    
 
     def generate_examples(self, force_attack = True):
         if (not self.perturbed_dataset) or force_attack:
@@ -210,6 +211,8 @@ def whitebox_attack(model, args):
         attacker = ChooseBestAttack(model, attackers, targeted=attackers[0].targeted)
     else:
         attacker = attackers[0]
+
+    # HERE! it generates pred and advpred!
     adv, label, pred, advpred = attack_whole_dataset(attacker, test_loader)
     print(prefix, 'clean accuracy:',get_accuracy(pred, label))
     print(prefix, 'robust accuracy:',get_accuracy(advpred, label))

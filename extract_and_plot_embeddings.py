@@ -21,14 +21,15 @@ import io
 import hashlib
 import pickle
 
-def _get_embeddings(model, loader,device, layer_idx, normalize=False):
+
+def _get_embeddings(model, loader, device, layer_idx, normalize=False):
     embeddings = {}
     labels = []
     model = model.eval()
     model = model.to(device)
     correct = 0
     total = 0
-    for x,y in loader:        
+    for x, y in loader:
         x = x.to(device)
         logits, Z = model(x, store_intermediate=True)        
         for i in layer_idx:            
@@ -43,11 +44,12 @@ def _get_embeddings(model, loader,device, layer_idx, normalize=False):
 
         labels.append(y)
     print('accuracy=%.4f' % float(correct/total))
-    for k,v in embeddings.items():
+    for k, v in embeddings.items():
         embeddings[k] = np.concatenate(v, 0)
     labels = np.concatenate(labels, 0)
     return embeddings, labels
-        
+
+
 def fit_transform(embeddings, transform, labels=None):
     print(embeddings.shape, transform)
     if type(transform) == str:
@@ -72,9 +74,11 @@ def fit_transform(embeddings, transform, labels=None):
         embeddings = transform.transform(embeddings)
         return embeddings, transform
 
+
 def modify_model(model):
     layers = list(model.layers.children())[:-1]
     model.layers = torch.nn.Sequential(*layers)
+
 
 def get_embeddings(args):
     model = torch.load(args.model_file)
@@ -107,7 +111,10 @@ def get_embeddings(args):
         pertrubed_data = [torch.load(df) for df in args.perturbed_dataset_path]
         adv_data = [d['data'] for d in pertrubed_data]    
         adv_data = torch.stack(adv_data, dim=0).to(torch.device('cpu'))
-        adv_preds = [d['preds'] for d in pertrubed_data]    
+
+        # TODO: where are the `preds` got generated
+
+        adv_preds = [d['preds'] for d in pertrubed_data]
         adv_preds = torch.stack(adv_preds, dim=0).to(torch.device('cpu'))
         cln_preds = [d['clean_preds'] for d in pertrubed_data]    
         cln_preds = torch.stack(cln_preds, dim=0).to(torch.device('cpu'))
@@ -157,7 +164,6 @@ def get_embeddings(args):
         print('cln_adv_dist:', cln_adv_dist.mean())
         # exit()
 
-
         images = np.concatenate([cln_images] + adv_images, 0)
         plt.figure(figsize=(20,20))
         f, grid = plt.subplots(len(args.perturbed_dataset_path)+1, args.n_adv)
@@ -187,6 +193,7 @@ def get_embeddings(args):
     print('cln_adv_dist:', cln_adv_dist.mean())
 
     return embeddings, labels, adv_embeddings, adv_labels, adv_idx
+
 
 def plot_embeddings(embeddings, labels, adv_embeddings, adv_labels, adv_idx):
     fig = plt.figure(figsize=(18,25))
