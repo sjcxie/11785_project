@@ -410,10 +410,19 @@ class WideResnet(LayeredModel):
     def forward(self, x, store_intermediate=False):
         return super().forward(x, store_intermediate=store_intermediate)
 
-if __name__ == '__main__':
-    net=WideResnet(28, 10, 0.3, 10).cuda()
-    print(net)
-    y, z = net(torch.randn(1,3,32,32).cuda(), store_intermediate=True)
+class Args:
+    def __init__(self, use_preactivation, normalize_activations, dataset):
+        self.use_preactivation = use_preactivation
+        self.normalize_activations = normalize_activations
+        self.dataset = dataset
 
-    print(y.size())
-    print([zz.shape for zz in z])
+if __name__ == '__main__':
+    net = VGG16(Args(True, True, "cifar10"), 10)
+    print(net)
+    torch.save(net, "./models/test_vgg16.pth")
+    # net=WideResnet(28, 10, 0.3, 10).cuda()
+    # print(net)
+    # y, z = net(torch.randn(1,3,32,32).cuda(), store_intermediate=True)
+
+    # print(y.size())
+    # print([zz.shape for zz in z])

@@ -65,9 +65,9 @@ def add_gaussian_smoothing_layers(model:LayeredModel):
 def train(args):
     train_dataset, val_dataset, test_dataset, num_classes = get_cifar10_dataset(args.datafolder)
     # train_dataset = [train_dataset[i] for i in range(10000)]
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)    
+    train_loader = DataLoader(train_dataset[:100], batch_size=args.batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset[:100], batch_size=args.batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset[:100], batch_size=args.batch_size, shuffle=False)    
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -142,16 +142,16 @@ def test(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', default='cifar10')
-    parser.add_argument('--datafolder', default='/home/mshah1/workhorse3')
+    parser.add_argument('--datafolder', default='./data')
     
-    parser.add_argument('--model_name')
-    parser.add_argument('--model_path', default='')
+    parser.add_argument('--model_name', default='vgg16')
+    parser.add_argument('--model_path', default='./models/test_vgg16.pth')
     parser.add_argument('--normalize_input', action='store_true')
 
-    parser.add_argument('--logdir', default='logs/activation_invariance/')
+    parser.add_argument('--logdir', default='./logs/activation_invariance')
     parser.add_argument('--exp_name', default='training')
     
-    parser.add_argument('--nepochs', type=int, default=100)
+    parser.add_argument('--nepochs', type=int, default=1)#100)
     parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--patience', type=int, default=5)
@@ -184,7 +184,7 @@ if __name__ == '__main__':
     parser.add_argument('--detach_adv_logits', action='store_true')
     parser.add_argument('--layer_idxs', type=int, nargs='+', default=[])
     parser.add_argument('--include_logits', action='store_true')
-    parser.add_argument('--z_criterion', type=str, default='diff', choices=('diff', 'diff-spread', 'cosine', 'cosine-spread'))
+    parser.add_argument('--z_criterion', type=str, default='cosine', choices=('diff', 'diff-spread', 'cosine', 'cosine-spread'))
     parser.add_argument('--use_preactivation', action='store_true')
 
     parser.add_argument('--match_logits', action='store_true')
@@ -198,7 +198,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--random_seed', type=int, default=9999)
 
-    parser.add_argument('--TRADES', action='store_true')
+    # parser.add_argument('--TRADES', action='store_true')
+    parser.add_argument('--TRADES', action='store_false')
 
     parser.add_argument('--debug', action='store_true')
 

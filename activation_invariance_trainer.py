@@ -126,8 +126,8 @@ class ActivationInvarianceTrainer(Trainer):
         label_mask = ((y_.mm(1/y_.transpose(0,1))) != 1).float()
         label_mask[label_mask == 0] = -1
 
-        zzadv_diff = []
-        zz_diff = []
+        zzadv_diff = [] # clean vs. adv. need to be minimized
+        zz_diff = []    # clean vs. clean. as a "regularizer"
         if self.args.layer_weighting == 'const':
             layer_wts = np.ones((len(Z),))
         elif self.args.layer_weighting == 'linear':
