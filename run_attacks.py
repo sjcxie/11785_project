@@ -80,7 +80,7 @@ if __name__ == '__main__':
     model_paths = args.model_path
     attacks = args.attack
 
-    gpus = os.environ['CUDA_VISIBLE_DEVICES'].split(',')
+    gpus = [0]
     curr_gpu_idx = 0
     proc_list = []
     
@@ -90,21 +90,34 @@ if __name__ == '__main__':
             args.attack = attack
             cmds = get_cmdline(args)
             for cmd in cmds:
-                while len(proc_list) >= len(gpus):
-                    for i,p in enumerate(proc_list):
-                        if p.poll() is not None:
-                            proc_list.pop(i)
+                p = Popen(cmd.split())
+                proc_list.append(p) 
 
-                    if len(proc_list) >= len(gpus):
-                        time.sleep(10)
-                    else:
-                        break
-                cmd="python run_attacks.py %s %s %s --nb_restarts %d --attack_library %d" % (mp, attack, args.dataset, args.nb_restarts, args.attack_library)
+    # gpus = os.environ['CUDA_VISIBLE_DEVICES'].split(',')
+    # curr_gpu_idx = 0
+    # proc_list = []
+    
+    # for mp in model_paths:    
+    #     for attack in attacks:
+    #         args.model_path = mp
+    #         args.attack = attack
+    #         cmds = get_cmdline(args)
+    #         for cmd in cmds:
+    #             while len(proc_list) >= len(gpus):
+    #                 for i,p in enumerate(proc_list):
+    #                     if p.poll() is not None:
+    #                         proc_list.pop(i)
+
+    #                 if len(proc_list) >= len(gpus):
+    #                     time.sleep(10)
+    #                 else:
+    #                     break
+    #             cmd="python run_attacks.py %s %s %s --nb_restarts %d --attack_library %d" % (mp, attack, args.dataset, args.nb_restarts, args.attack_library)
                 
-                print('gpu_id:',gpus[curr_gpu_idx], cmd)
-                p = Popen(cmd.split(), env=dict(os.environ, CUDA_VISIBLE_DEVICES=gpus[curr_gpu_idx]))
-                proc_list.append(p)        
-                curr_gpu_idx = (curr_gpu_idx + 1) % len(gpus)              
+    #             print('gpu_id:',gpus[curr_gpu_idx], cmd)
+    #             p = Popen(cmd.split(), env=dict(os.environ, CUDA_VISIBLE_DEVICES=gpus[curr_gpu_idx]))
+    #             proc_list.append(p)        
+    #             curr_gpu_idx = (curr_gpu_idx + 1) % len(gpus)              
 
     for p in proc_list:
         p.wait()
