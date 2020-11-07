@@ -144,8 +144,8 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', default='cifar10')
     parser.add_argument('--datafolder', default='./data')
     
-    parser.add_argument('--model_name', default='vgg16')
-    parser.add_argument('--model_path', default='./models/test_vgg16.pth')
+    parser.add_argument('--model_name', default='vgg16', choices=('wide_resnet-10', 'wide_resnet', 'vgg16'))
+    parser.add_argument('--model_path', default='')
     parser.add_argument('--normalize_input', action='store_true')
 
     parser.add_argument('--logdir', default='./logs/activation_invariance')
