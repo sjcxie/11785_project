@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-# from torch.utils.tensorboard.writer import SummaryWriter
+from torch.utils.tensorboard.writer import SummaryWriter
 from torch import nn
 import torchvision
 from wide_resnet import Wide_ResNet
@@ -31,7 +31,7 @@ class Trainer(object):
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.device = device
-        # self.logger = SummaryWriter(log_dir=args.logdir, flush_secs=60)
+        self.logger = SummaryWriter(log_dir=args.logdir, flush_secs=60)
         self.early_stop = False
         self.tracked_metric = 'train_loss'
         self.metric_comparator = lambda x, y: x<y
@@ -314,8 +314,8 @@ class AETrainer(Trainer):
         
         print('test_loss:', avg_loss)
 
-        # tensorboard_logs = {'test_loss': avg_loss}
-        # return {'avg_test_loss': avg_loss}, tensorboard_logs
+        tensorboard_logs = {'test_loss': avg_loss}
+        return {'avg_test_loss': avg_loss}, tensorboard_logs
 
         return {'avg_test_loss': avg_loss}
     
