@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from torch.utils.tensorboard.writer import SummaryWriter
+# from torch.utils.tensorboard.writer import SummaryWriter
 from torch import nn
 import torchvision
 from wide_resnet import Wide_ResNet
@@ -31,7 +31,7 @@ class Trainer(object):
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.device = device
-        self.logger = SummaryWriter(log_dir=args.logdir, flush_secs=60)        
+        # self.logger = SummaryWriter(log_dir=args.logdir, flush_secs=60)
         self.early_stop = False
         self.tracked_metric = 'train_loss'
         self.metric_comparator = lambda x, y: x<y
@@ -145,7 +145,7 @@ class Trainer(object):
             for fn in os.listdir(outdir):
                 os.remove(os.path.join(outdir, fn))
         outfile = os.path.join(outdir,
-                                "metric=%.2f-epoch=%d.pt" % (metric, epoch_idx))
+                                "metric=%.2f-epoch=%d.pth" % (metric, epoch_idx))
         return outfile
 
     def checkpoint(self, metric, epoch_idx, comparator):
@@ -156,6 +156,7 @@ class Trainer(object):
             outfile = self.create_or_clear_cpdir(metric, epoch_idx)
             torch.save(self.model, outfile)
             self.best_checkpoint = outfile
+
         else:
             self.epochs_since_best += 1
 
@@ -313,8 +314,10 @@ class AETrainer(Trainer):
         
         print('test_loss:', avg_loss)
 
-        tensorboard_logs = {'test_loss': avg_loss}
-        return {'avg_test_loss': avg_loss}, tensorboard_logs
+        # tensorboard_logs = {'test_loss': avg_loss}
+        # return {'avg_test_loss': avg_loss}, tensorboard_logs
+
+        return {'avg_test_loss': avg_loss}
     
     def test(self):
         _, test_metrics = self.test_loop(self.test_epoch_end)
@@ -604,7 +607,7 @@ class MaxMarginTrainer(AETrainer):
                 'train_loss':float(loss.mean()), 
                 'train_accuracy':accuracy}
 
-        return {"loss":loss.mean(), 'accuracy':accuracy}, metrics
+        return {"loss": loss.mean(), 'accuracy':accuracy}, metrics
 
     def train_epoch_end(self, outputs, metrics, epoch_idx):
         if hasattr(self.model, 'eval_decoder'):

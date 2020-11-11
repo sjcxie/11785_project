@@ -62,12 +62,13 @@ def add_gaussian_smoothing_layers(model:LayeredModel):
             GaussianNoiseLayer(),
             l
         )
+
 def train(args):
     train_dataset, val_dataset, test_dataset, num_classes = get_cifar10_dataset(args.datafolder)
     # train_dataset = [train_dataset[i] for i in range(10000)]
-    train_loader = DataLoader(train_dataset[:100], batch_size=args.batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset[:100], batch_size=args.batch_size, shuffle=False)
-    test_loader = DataLoader(test_dataset[:100], batch_size=args.batch_size, shuffle=False)    
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -96,6 +97,7 @@ def train(args):
     args.use_MoM = 'MoM' in args.optimizer
 
     args.logdir = os.path.join(args.logdir, "%s_%s" % (model.name, args.exp_name))
+    # args.logdir = os.path.join(args.logdir) #, "%s_%s" % (model.name, args.exp_name)
     exp_num = 1 + max([int(x.split('_')[1]) for x in os.listdir(args.logdir)]) if (os.path.exists(args.logdir) and len(os.listdir(args.logdir)) > 0) else 0
     args.logdir = os.path.join(args.logdir, 'exp_%d' % exp_num)
     print('logging to ', args.logdir)
@@ -148,10 +150,10 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', default='')
     parser.add_argument('--normalize_input', action='store_true')
 
-    parser.add_argument('--logdir', default='./logs/activation_invariance')
+    parser.add_argument('--logdir', default='./')  # /logs/activation_invariance
     parser.add_argument('--exp_name', default='training')
     
-    parser.add_argument('--nepochs', type=int, default=1)#100)
+    parser.add_argument('--nepochs', type=int, default=100) #100)
     parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--patience', type=int, default=5)

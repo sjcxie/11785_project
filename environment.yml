@@ -117,5 +117,5 @@ dependencies:
     - tabulate==0.8.7
     - tensorboard==2.1.1
     - urllib3==1.25.8
-prefix: /home/danielmo/anaconda3/envs/adversarialML
+prefix: /home/jinchenx/miniconda3/envs/adversarialML
 
