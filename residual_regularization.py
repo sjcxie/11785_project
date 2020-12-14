@@ -211,7 +211,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', default='cifar10')
-    parser.add_argument('--datafolder', default='/home/mshah1/workhorse3')
+    parser.add_argument('--datafolder', default='./')
     parser.add_argument('--model_path', default='')
     parser.add_argument('--logdir', default='logs/')
     parser.add_argument('--exp_name', default='')

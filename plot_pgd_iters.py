@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', default='cifar10')
-    parser.add_argument('--datafolder', default='/home/mshah1/workhorse3')
+    parser.add_argument('--datafolder', default='./')
     parser.add_argument('--model_path')
     parser.add_argument('--n_points', type=int)
     parser.add_argument('--proj_type', type=str, default='pca', choices=('pca', 'lda', 'tsne'))

@@ -17,7 +17,7 @@ def compute_diff_spread(z, zadv, label_mask):
     z = reshape2D(z)
     batch_size = z.shape[0]
 
-    rand_idx = np.random.choice(np.arange(z.shape[0]), 32, replace=False)
+    rand_idx = np.random.choice(np.arange(z.shape[0]), 32, replace=True)
     _z = z[rand_idx]
     label_mask = label_mask[:, rand_idx]    
 

@@ -51,6 +51,14 @@ class TRADESTrainer(Trainer):
         if self.model.training:
             for p in self.model.parameters():
                 assert (p.grad is None) or (p.grad == 0).all()
+
+        file = open("logfile.txt", "a+")
+        
+        file.write('[Train] Clean Accuracy : {:.4f} \n'.format(cln_acc))
+        file.write('[Train] Adv Accuracy : {:.4f} \n'.format(adv_acc))
+        file.write('\n')
+        file.close()
+
         return {'loss': loss}, {'train_clean_accuracy': cln_acc,
                              'train_adv_accuracy': adv_acc,
                              'train_accuracy': (cln_acc + adv_acc) / 2,
@@ -83,8 +91,9 @@ def train(args):
         model.args.layer_idxs = list(range(len(model.layers) - 1))
         if args.include_logits:
             model.args.layer_idxs.append(len(model.layers)-1)
+
     model.args.layer_idxs = torch.tensor(model.args.layer_idxs)
-    print(model.args.layer_idxs)
+    # print(model.args.layer_idxs)
 
     if args.optimizer == 'adam':
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=0.0005)
@@ -153,19 +162,19 @@ if __name__ == '__main__':
     parser.add_argument('--logdir', default='./')  # /logs/activation_invariance
     parser.add_argument('--exp_name', default='training')
     
-    parser.add_argument('--nepochs', type=int, default=100) #100)
+    parser.add_argument('--nepochs', type=int, default=150) #100)
     parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--lr', type=float, default=1e-3)
-    parser.add_argument('--patience', type=int, default=5)
+    parser.add_argument('--patience', type=int, default=10)
     parser.add_argument('--loss_type', type=str, default='xent')
-    parser.add_argument('--optimizer', type=str, default='adam')
-    parser.add_argument('--decay_factor', type=float, default=0.5)
-    parser.add_argument('--init_c', type=float, default=1)
-    parser.add_argument('--c_step_size', type=float, default=1.0005)
+    parser.add_argument('--optimizer', type=str, default='MoM-SGD')
+    parser.add_argument('--decay_factor', type=float, default=0.1)
+    parser.add_argument('--init_c', type=float, default=1e-4)
+    parser.add_argument('--c_step_size', type=float, default=1.00033)
     
     parser.add_argument('--test', action='store_true')
 
-    parser.add_argument('--attack', type=str, default="none", choices=('none', 'pgdinf', 'pgdl2', 'gs'))
+    parser.add_argument('--attack', type=str, default='pgdinf', choices=('none', 'pgdinf', 'pgdl2', 'gs'))
     parser.add_argument('--max_instances', type=int, default=-1)
     parser.add_argument('--nb_iter', type=int, default=7)
     parser.add_argument('--nb_restarts', type=int, default=1)
@@ -186,11 +195,11 @@ if __name__ == '__main__':
     parser.add_argument('--detach_adv_logits', action='store_true')
     parser.add_argument('--layer_idxs', type=int, nargs='+', default=[])
     parser.add_argument('--include_logits', action='store_true')
-    parser.add_argument('--z_criterion', type=str, default='cosine', choices=('diff', 'diff-spread', 'cosine', 'cosine-spread'))
+    parser.add_argument('--z_criterion', type=str, default='diff', choices=('diff', 'diff-spread', 'cosine', 'cosine-spread'))
     parser.add_argument('--use_preactivation', action='store_true')
 
     parser.add_argument('--match_logits', action='store_true')
-    parser.add_argument('--logit_matching_fn', type=str, choices=('KL', 'cosine', 'L2'), default='KL')
+    parser.add_argument('--logit_matching_fn', type=str, choices=('KL', 'cosine', 'L2'), default='L2')
     parser.add_argument('--logit_loss_wt', type=float, default=1)
     parser.add_argument('--normalize_activations', action='store_true')
 
@@ -200,8 +209,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--random_seed', type=int, default=9999)
 
-    # parser.add_argument('--TRADES', action='store_true')
-    parser.add_argument('--TRADES', action='store_false')
+    parser.add_argument('--TRADES', action='store_true')
+    # parser.add_argument('--TRADES', action='store_false')
 
     parser.add_argument('--debug', action='store_true')
 
@@ -210,6 +219,8 @@ if __name__ == '__main__':
     torch.cuda.manual_seed(9999)
 
     args = parser.parse_args()
+
+    print(args)
     args.layer_idxs = torch.tensor(args.layer_idxs)
     if args.test:
         test(args)

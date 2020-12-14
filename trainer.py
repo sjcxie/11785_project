@@ -144,8 +144,10 @@ class Trainer(object):
         else:
             for fn in os.listdir(outdir):
                 os.remove(os.path.join(outdir, fn))
+
         outfile = os.path.join(outdir,
                                 "metric=%.2f-epoch=%d.pth" % (metric, epoch_idx))
+        print("The outfile directory is:", outfile)
         return outfile
 
     def checkpoint(self, metric, epoch_idx, comparator):
@@ -156,7 +158,6 @@ class Trainer(object):
             outfile = self.create_or_clear_cpdir(metric, epoch_idx)
             torch.save(self.model, outfile)
             self.best_checkpoint = outfile
-
         else:
             self.epochs_since_best += 1
 
