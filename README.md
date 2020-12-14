@@ -34,12 +34,12 @@ under intended attack model:
 ```
 python activation_invariant_training.py --TRADES --attack='pgdl2' --eps=1.0'
 ```
-By adding `--test` to the command line and specify the `--model_path` to a saved model that you want to test 
-on, one can evaluate classification accuracy of the saved model. For example, you can train your model without any 
-adversarial data and then test with PGD adversarial attack to see how it performed.    
+To test the trained model and generated results under attack, one should run `run_attack.pu`, specify the `--model_path` to a saved model that you want to test 
+on and specify the attack method `--attack=`, one can evaluate classification accuracy of the saved model. For example, we trained our model with pgd-inf 
+adversarial attack and then test with PGD-L2 adversarial attack and without normalization to evaluate it.   
+
 ```
-python activation_invariant_training.py'
-python activation_invariant_training.py --test --attack='pgdinf'
+python run_attack.py --attack='pgdl2' --no_normalization --model_path='exp_0/checkpoints'
 ``` 
 
 Some of other optional arguments:  
@@ -50,11 +50,12 @@ Default is 100.
 perturbed data at specific layers (specified using `--layer_idx`). Default is cosine similarity.  
 `--layer_idx`: specify the layers indicies you would like to compute the divergence between the layer output of clean data 
 and adversarial data. Default is all layers.  
- `--cln_loss_wt`: specify the weight we use for adding the loss on clean dataset to the full loss.  
- `--adv_loss_wt`: specify the weight we use for adding the loss on adversarial dataset to the full loss.  
- `--layer_weighting`: specify the way you want to assign weight for adding each layer's divergence to the full loss.
+`--cln_loss_wt`: specify the weight we use for adding the loss on clean dataset to the full loss.  
+`--adv_loss_wt`: specify the weight we use for adding the loss on adversarial dataset to the full loss.  
+`--layer_weighting`: specify the way you want to assign weight for adding each layer's divergence to the full loss.
   The weight of layer divergence can be constant, linearly assigned or exponentailly assigned. Default is all layers' divergence
   have weight=1.  
+`--layer_indices`: specify which layers to use for layer-wise divergence.
 
  
 
